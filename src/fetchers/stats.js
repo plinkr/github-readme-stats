@@ -52,9 +52,6 @@ const GRAPHQL_STATS_QUERY = `
       reviews: contributionsCollection {
         totalPullRequestReviewContributions
       }
-      repositoriesContributedTo(first: 1, contributionTypes: [COMMIT, ISSUE, PULL_REQUEST, REPOSITORY]) {
-        totalCount
-      }
       pullRequests(first: 1) {
         totalCount
       }
@@ -81,6 +78,23 @@ const GRAPHQL_STATS_QUERY = `
   }
 `;
 
+// `repositoriesContributedTo` is fetched with its own request, separate from
+// GRAPHQL_STATS_QUERY. Combining it with `contributionsCollection` in the
+// same query can trigger a `RESOURCE_LIMITS_EXCEEDED` GraphQL error for
+// accounts with a large volume of pull request review contributions, even
+// though `rateLimit.cost` still reports a cost of 1 for the combined query.
+// Splitting it out avoids that failure mode entirely, at no extra rate-limit
+// cost (both requests are cost 1).
+const GRAPHQL_CONTRIBUTED_TO_QUERY = `
+  query userInfo($login: String!) {
+    user(login: $login) {
+      repositoriesContributedTo(first: 1, contributionTypes: [COMMIT, ISSUE, PULL_REQUEST, REPOSITORY]) {
+        totalCount
+      }
+    }
+  }
+`;
+
 /**
  * @typedef {import('axios').AxiosResponse} AxiosResponse Axios response.
  */
@@ -98,6 +112,28 @@ const fetcher = (variables, token) => {
     {
       query,
       variables,
+    },
+    {
+      Authorization: `bearer ${token}`,
+    },
+  );
+};
+
+/**
+ * Fetches `repositoriesContributedTo` in its own request. Kept separate from
+ * `fetcher` above so it never gets combined with `contributionsCollection`
+ * in the same GraphQL query (see comment on GRAPHQL_CONTRIBUTED_TO_QUERY).
+ *
+ * @param {object} variables Fetcher variables.
+ * @param {string} variables.login GitHub login.
+ * @param {string} token GitHub token.
+ * @returns {Promise<AxiosResponse>} Axios response.
+ */
+const contributedToFetcher = (variables, token) => {
+  return request(
+    {
+      query: GRAPHQL_CONTRIBUTED_TO_QUERY,
+      variables: { login: variables.login },
     },
     {
       Authorization: `bearer ${token}`,
@@ -161,6 +197,18 @@ const statsFetcher = async ({
       res.data.data.user.repositories.pageInfo.hasNextPage;
     endCursor = res.data.data.user.repositories.pageInfo.endCursor;
   }
+
+  // Fetch `repositoriesContributedTo` separately (see GRAPHQL_CONTRIBUTED_TO_QUERY
+  // comment above for why). If this request itself errors out, surface that
+  // error the same way the main stats request would.
+  const contributedToRes = await retryer(contributedToFetcher, {
+    login: username,
+  });
+  if (contributedToRes.data.errors) {
+    return contributedToRes;
+  }
+  stats.data.data.user.repositoriesContributedTo =
+    contributedToRes.data.data.user.repositoriesContributedTo;
 
   return stats;
 };

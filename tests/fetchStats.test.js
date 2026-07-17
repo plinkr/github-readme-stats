@@ -10,7 +10,6 @@ const data_stats = {
   data: {
     user: {
       name: "Anurag Hazra",
-      repositoriesContributedTo: { totalCount: 61 },
       commits: {
         totalCommitContributions: 100,
       },
@@ -36,6 +35,17 @@ const data_stats = {
           endCursor: "cursor",
         },
       },
+    },
+  },
+};
+
+// `repositoriesContributedTo` is now fetched with its own request (split out
+// to avoid RESOURCE_LIMITS_EXCEEDED when combined with contributionsCollection),
+// so it gets its own mock response instead of living inside `data_stats`.
+const data_contributed_to = {
+  data: {
+    user: {
+      repositoriesContributedTo: { totalCount: 61 },
     },
   },
 };
@@ -108,6 +118,12 @@ beforeEach(() => {
   mock.onPost("https://api.github.com/graphql").reply((cfg) => {
     let req = JSON.parse(cfg.data);
 
+    // The `repositoriesContributedTo` request is now a distinct query, so
+    // route it to its own mock response before the other checks below.
+    if (req.query.includes("repositoriesContributedTo")) {
+      return [200, data_contributed_to];
+    }
+
     if (
       req.variables &&
       req.variables.startTime &&
@@ -158,11 +174,15 @@ describe("Test fetchStats", () => {
 
   it("should stop fetching when there are repos with zero stars", async () => {
     mock.reset();
+    // With FETCH_MULTI_PAGE_STARS set to "false" (the beforeEach default),
+    // pagination stops after the first page regardless of star counts, so
+    // only two real requests happen here: the main stats query, followed by
+    // the separate repositoriesContributedTo query.
     mock
       .onPost("https://api.github.com/graphql")
       .replyOnce(200, data_stats)
       .onPost("https://api.github.com/graphql")
-      .replyOnce(200, data_repo_zero_stars);
+      .replyOnce(200, data_contributed_to);
 
     let stats = await fetchStats("anuraghazra");
     const rank = calculateRank({
