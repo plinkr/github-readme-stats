@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Get dynamically generated GitHub stats on your READMEs!"
+    />
+    <meta
+      name="keywords"
+      content="github, readme, stats, cards, card-generator"
+    />
+    <title>GitHub Readme Stats</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+          "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+          sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        padding: 60px 40px;
+        max-width: 800px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        text-align: center;
+      }
+
+      .logo {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 20px;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        color: #667eea;
+        margin-bottom: 15px;
+      }
+
+      .tagline {
+        font-size: 1.25rem;
+        color: #666;
+        margin-bottom: 40px;
+      }
+
+      .description {
+        font-size: 1rem;
+        color: #555;
+        margin-bottom: 30px;
+        line-height: 1.8;
+      }
+
+      .buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 40px;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 15px 30px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+        background: #667eea;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #5568d3;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+      }
+
+      .btn-secondary {
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+      }
+
+      .btn-secondary:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+      }
+
+      .features {
+        margin-top: 50px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 30px;
+        text-align: left;
+      }
+
+      .feature {
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+      }
+
+      .feature h3 {
+        color: #667eea;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+      }
+
+      .feature p {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .powered-by {
+        margin-top: 50px;
+        padding-top: 30px;
+        border-top: 1px solid #eee;
+      }
+
+      .powered-by img {
+        height: 40px;
+      }
+
+      @media (max-width: 600px) {
+        h1 {
+          font-size: 2rem;
+        }
+
+        .container {
+          padding: 40px 20px;
+        }
+
+        .buttons {
+          flex-direction: column;
+        }
+
+        .btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <img
+        src="https://res.cloudinary.com/anuraghazra/image/upload/v1594908242/logo_ccswme.svg"
+        alt="GitHub Readme Stats Logo"
+        class="logo"
+      />
+      <h1>GitHub Readme Stats</h1>
+      <p class="tagline">
+        Get dynamically generated GitHub stats on your READMEs!
+      </p>
+
+      <p class="description">
+        Create beautiful, customizable cards displaying your GitHub statistics,
+        top languages, repository pins, and more. Perfect for showcasing your
+        coding activity on your profile README.
+      </p>
+
+      <div class="buttons">
+        <a
+          href="https://github.com/anuraghazra/github-readme-stats"
+          class="btn btn-primary"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          View on GitHub
+        </a>
+        <a
+          href="https://github.com/anuraghazra/github-readme-stats#github-stats-card"
+          class="btn btn-secondary"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Get Started
+        </a>
+      </div>
+
+      <div class="features">
+        <div class="feature">
+          <h3>📊 Stats Cards</h3>
+          <p>
+            Display your GitHub statistics with customizable themes and layouts
+          </p>
+        </div>
+        <div class="feature">
+          <h3>🎨 Themes</h3>
+          <p>Choose from dozens of pre-made themes or create your own</p>
+        </div>
+        <div class="feature">
+          <h3>🌐 Languages</h3>
+          <p>
+            Show your most used programming languages in various chart styles
+          </p>
+        </div>
+        <div class="feature">
+          <h3>📌 Repo Pins</h3>
+          <p>Highlight your best repositories with attractive cards</p>
+        </div>
+      </div>
+
+      <div class="powered-by">
+        <a
+          href="https://vercel.com?utm_source=github_readme_stats_team&utm_campaign=oss"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img src="/powered-by-vercel.svg" alt="Powered by Vercel" />
+        </a>
+      </div>
+    </div>
+
+    <script type="module">
+      import { inject } from "https://cdn.jsdelivr.net/npm/@vercel/analytics@1/+esm";
+      inject();
+    </script>
+  </body>
+</html>
